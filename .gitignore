@@ -1,0 +1,36 @@
+# Virtuelle Umgebung
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Datenbanken
+*.db
+*.sqlite
+*.sqlite3
+
+# Excel/Dateien (falls nicht versioniert werden sollen)
+# *.xlsx
+# *.xls
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
