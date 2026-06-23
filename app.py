@@ -65,61 +65,17 @@ if st.session_state.eingabe_modus != st.session_state.anzeige_modus:
 st.sidebar.markdown("---")
 st.sidebar.header("📋 Kostenstellenliste")
 
-# Upload der Kostenstellenliste
-uploaded_file = st.sidebar.file_uploader(
-    "Excel-Datei mit Kostenstellen hochladen",
-    type=["xlsx", "xls", "csv"],
-    help="Erwartet: Spalte 'Kostenstelle' (Zahl) und 'Bezeichnung' (Text)",
-)
-
-if uploaded_file is not None:
-    try:
-        if uploaded_file.name.endswith(".csv"):
-            df_ks = pd.read_csv(uploaded_file)
-        else:
-            df_ks = pd.read_excel(uploaded_file)
-
-        # Spalten automatisch erkennen
-        # Mögliche Namen für die Kostennummer-Spalte
-        moegliche_namen_nummer = ["Kostenstelle", "Kostenstellennummer", "KST", "Kostenstelle-Nr", "Nummer", "Nr."]
-        moegliche_namen_bezeichnung = ["Bezeichnung", "Beschreibung", "Name", "Kostenstellenbezeichnung"]
-
-        # Finde passende Spalten
-        spalte_nummer = None
-        spalte_bezeichnung = None
-
-        for name in moegliche_namen_nummer:
-            if name in df_ks.columns:
-                spalte_nummer = name
-                break
-
-        for name in moegliche_namen_bezeichnung:
-            if name in df_ks.columns:
-                spalte_bezeichnung = name
-                break
-
-        # Fallback: erste Spalte = Nummer, zweite = Bezeichnung
-        if spalte_nummer is None and len(df_ks.columns) >= 1:
-            spalte_nummer = df_ks.columns[0]
-        if spalte_bezeichnung is None and len(df_ks.columns) >= 2:
-            spalte_bezeichnung = df_ks.columns[1]
-
-        # Umbenennen und bereinigen
-        df_ks = df_ks.rename(columns={spalte_nummer: "Kostenstelle", spalte_bezeichnung: "Bezeichnung"})
-        df_ks["Kostenstelle"] = pd.to_numeric(df_ks["Kostenstelle"], errors="coerce")
-        df_ks = df_ks.dropna(subset=["Kostenstelle"])
-        df_ks["Kostenstelle"] = df_ks["Kostenstelle"].astype(int)
-        df_ks["Bezeichnung"] = df_ks["Bezeichnung"].astype(str).str.strip()
-
-        st.session_state.kostenstellen_df = df_ks[["Kostenstelle", "Bezeichnung"]].reset_index(drop=True)
-        st.sidebar.success(f"✅ {len(df_ks)} Kostenstellen geladen")
-    except Exception as e:
-        st.sidebar.error(f"❌ Fehler beim Laden: {e}")
+# Feste Kostenstellenliste (20 Stück, anonymisiert)
+kostenstellen_liste = [
+    (i, f"Kostenstelle {i}") for i in range(1, 21)
+]
+df_ks = pd.DataFrame(kostenstellen_liste, columns=["Kostenstelle", "Bezeichnung"])
+st.session_state.kostenstellen_df = df_ks
+st.sidebar.success(f"✅ {len(df_ks)} Kostenstellen geladen (fest integriert)")
 
 # Kostenstellenliste anzeigen
-if st.session_state.kostenstellen_df is not None:
-    with st.sidebar.expander("📄 Geladene Kostenstellen"):
-        st.dataframe(st.session_state.kostenstellen_df, hide_index=True, use_container_width=True)
+with st.sidebar.expander("📄 Geladene Kostenstellen"):
+    st.dataframe(st.session_state.kostenstellen_df, hide_index=True, use_container_width=True)
 
 # ============================================================================
 # 4. HAUPTBEREICH – RECHNUNGSEINGABE
