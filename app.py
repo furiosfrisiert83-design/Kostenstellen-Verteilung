@@ -63,6 +63,30 @@ if st.session_state.eingabe_modus != st.session_state.anzeige_modus:
         st.sidebar.info("💡 Rechne Brutto → Netto (÷1,19)")
 
 st.sidebar.markdown("---")
+st.sidebar.header("🧮 Brutto/Netto-Rechner")
+
+# Unabhängiger Rechner
+with st.sidebar.form("brutto_netto_rechner", clear_on_submit=False):
+    st.caption("Schnellumrechnung zwischen Netto und Brutto")
+    
+    rechner_modus = st.radio(
+        "Modus:",
+        options=["Netto → Brutto", "Brutto → Netto"],
+        horizontal=True,
+    )
+    
+    if rechner_modus == "Netto → Brutto":
+        netto_wert = st.number_input("Netto-Betrag (€)", min_value=0.0, step=0.01, format="%.2f", key="rechner_netto")
+        brutto_wert = netto_wert * 1.19
+        st.success(f"**Brutto: {brutto_wert:,.2f} €**")
+    else:
+        brutto_wert = st.number_input("Brutto-Betrag (€)", min_value=0.0, step=0.01, format="%.2f", key="rechner_brutto")
+        netto_wert = brutto_wert / 1.19
+        st.success(f"**Netto: {netto_wert:,.2f} €**")
+    
+    # Kein Submit-Button nötig, da es sich automatisch aktualisiert
+
+st.sidebar.markdown("---")
 st.sidebar.header("📋 Kostenstellenliste")
 
 # Feste Kostenstellenliste (20 Stück, anonymisiert)
